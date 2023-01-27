@@ -1,20 +1,16 @@
 package main
 
 import (
-	"github.com/gin-gonic/gin"
-	logger "github.com/sirupsen/logrus"
+	"fmt"
+	"net/http"
 )
 
 func main() {
-	logger.SetFormatter(&logger.TextFormatter{
-		FullTimestamp:   true,
-		TimestampFormat: "02-01-2006 15:04:05",
+
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprint(w, "Hello, World!")
 	})
-	r := gin.Default()
-	r.GET("/ping", func(c *gin.Context) {
-		c.JSON(200, gin.H{
-			"message": "pong",
-		})
-	})
-	r.Run()
+
+	fmt.Println("Server starting on http://localhost:8080")
+	http.ListenAndServe(":8080", nil)
 }
