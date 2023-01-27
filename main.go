@@ -5,6 +5,7 @@ import (
 	"StatusChecker/service"
 	"fmt"
 	"net/http"
+	"time"
 )
 
 func main() {
@@ -14,6 +15,11 @@ func main() {
 
 	//handle requests
 	http.HandleFunc("/websites", service.CheckWebsites)
+
+	//start ticker
+	ticker := time.NewTicker(time.Minute)
+	//update status of websites every minute
+	go service.UpdateStatus(ticker)
 
 	//start server
 	fmt.Println("Server starting on http://localhost:8080")

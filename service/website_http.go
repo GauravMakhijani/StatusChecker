@@ -26,7 +26,7 @@ func CheckWebsites(w http.ResponseWriter, r *http.Request) {
 
 			_, err := db.DB.Exec("INSERT INTO links (link, status) VALUES ($1, $2)", v, status)
 			if err != nil {
-				fmt.Println("Error inserting data into database", err)
+				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
 			}
 
