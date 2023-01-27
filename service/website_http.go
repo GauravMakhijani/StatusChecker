@@ -38,5 +38,43 @@ func CheckWebsites(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(msg)
 
 		fmt.Println("Post request successful")
+
+	} else if r.Method == http.MethodGet { //only accept get requests
+
+		//get query from url
+		query := r.URL.Query().Get("name")
+
+		websites := []db.Website{}
+
+		//check if query is empty
+		if query != "" {
+
+			// Search for websites in the database based on the query
+			err := db.DB.Select(&websites, "SELECT link,status FROM links WHERE link LIKE $1", "%"+query+"%")
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+
+			w.Header().Set("Content-Type", "application/json")
+			json.NewEncoder(w).Encode(websites)
+
+		} else {
+			// Retrieve all websites from the database
+			err := db.DB.Select(&websites, "SELECT link,status FROM links")
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+
+			w.Header().Set("Content-Type", "application/json")
+			json.NewEncoder(w).Encode(websites)
+
+		}
+
+		fmt.Println("Get request successful")
+
+	} else {
+		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
 	}
 }
