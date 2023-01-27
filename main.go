@@ -2,6 +2,7 @@ package main
 
 import (
 	"StatusChecker/db"
+	"StatusChecker/service"
 	"fmt"
 	"net/http"
 )
@@ -12,9 +13,7 @@ func main() {
 	db.Init()
 
 	//handle requests
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprint(w, "Hello, World!")
-	})
+	http.HandleFunc("/websites", service.CheckWebsites)
 
 	//start server
 	fmt.Println("Server starting on http://localhost:8080")
