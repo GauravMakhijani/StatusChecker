@@ -12,6 +12,7 @@ func main() {
 
 	//initialize database
 	db.Init()
+	defer db.DB.Close()
 
 	//handle requests
 	http.HandleFunc("/websites", service.CheckWebsites)
