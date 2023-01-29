@@ -6,10 +6,6 @@ import (
 	"strings"
 )
 
-// type Website struct {
-// 	Link   string `db:"link"`
-// 	Status string `db:"status"`
-// }
 type StatusChecker interface {
 	CheckStatus(url string) (int, error)
 }
