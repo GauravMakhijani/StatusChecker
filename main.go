@@ -18,9 +18,9 @@ func main() {
 	http.HandleFunc("/websites", service.CheckWebsites)
 
 	//start ticker
-	ticker := time.NewTicker(time.Minute)
+	ticker := time.NewTicker(time.Second * 10)
 	//update status of websites every minute
-	go service.UpdateStatus(ticker)
+	go service.CheckStatus(ticker)
 
 	//start server
 	fmt.Println("Server starting on http://localhost:8080")

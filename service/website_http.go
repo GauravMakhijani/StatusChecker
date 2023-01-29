@@ -22,7 +22,7 @@ func CheckWebsites(w http.ResponseWriter, r *http.Request) {
 
 		//loop through websites and get status
 		for _, v := range input["websites"] {
-			status := GetStatus(v)
+			status := db.GetStatus(v)
 
 			_, err := db.DB.Exec("INSERT INTO links (link, status) VALUES ($1, $2)", v, status)
 			if err != nil {
