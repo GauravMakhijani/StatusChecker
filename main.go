@@ -18,7 +18,7 @@ func main() {
 	http.HandleFunc("/websites", service.CheckWebsites)
 
 	//start ticker
-	ticker := time.NewTicker(time.Second * 10)
+	ticker := time.NewTicker(time.Minute)
 	//update status of websites every minute
 	go service.CheckStatus(ticker)
 
