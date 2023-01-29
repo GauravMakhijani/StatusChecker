@@ -38,6 +38,9 @@ func UpdateStatus(ticker *time.Ticker) {
 				go update(website)
 
 			}
+		default:
+			fmt.Println("Waiting for ticker")
 		}
+
 	}
 }
