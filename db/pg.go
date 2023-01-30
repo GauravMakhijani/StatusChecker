@@ -9,7 +9,7 @@ import (
 
 const (
 	dbDriver = "postgres"
-	uri      = "postgres://gaurav:4444@localhost:5432/status?sslmode=disable"
+	uri      = "postgres://gaurav:4444@localhost:5432/websites?sslmode=disable"
 )
 
 var DB *sqlx.DB

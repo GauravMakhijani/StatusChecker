@@ -11,6 +11,7 @@ A REST API for monitoring the status of a list of websites.
     $ createdb website_monitor
 
 4.migrate
-    migrate -database postgres://user:password@localhost:5432/dbname -path . up
+    migrate -database postgres://user:password@localhost:5432/dbname -path ./db/migrations up
+also change the dburi in db/pg.go file
 
 
