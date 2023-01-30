@@ -6,12 +6,12 @@ A REST API for monitoring the status of a list of websites.
 
 1. Clone the repository
 2. install dependencies "go mod tidy"
-3. setup database   
-    
-    $ createdb website_monitor
+3. setup database
+
+   $ createdb website_monitor
 
 4.migrate
+
     migrate -database postgres://user:password@localhost:5432/dbname -path ./db/migrations up
+
 also change the dburi in db/pg.go file
-
-
