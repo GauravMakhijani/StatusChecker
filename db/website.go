@@ -2,6 +2,7 @@ package db
 
 import (
 	"github.com/jmoiron/sqlx"
+	logger "github.com/sirupsen/logrus"
 )
 
 type WebsiteStatus struct {
@@ -31,8 +32,7 @@ func New(db *sqlx.DB) StatusStorer {
 // UpdateWebsiteStatus updates the status of a website
 func (s *store) UpdateWebsiteStatus(url string, status string) (err error) {
 
-	// fmt.Println("Checking status of", ws.Link)
-	s.DB.Exec("UPDATE links SET status = $2 where link = $1", url, status)
+	_, err = s.DB.Exec("UPDATE links SET status = $2 where link = $1", url, status)
 
 	return
 }
@@ -43,6 +43,9 @@ func (s *store) GetWebsiteStatus(query string) (ws []WebsiteStatus, err error) {
 	ws = []WebsiteStatus{}
 	err = s.DB.Select(&ws, "SELECT id,link,status FROM links WHERE link LIKE $1", "%"+query+"%")
 
+	if err != nil {
+		logger.Error("error occurred in GetWebsiteStatus, ", err)
+	}
 	return
 }
 
@@ -58,7 +61,7 @@ func (s *store) GetAll() (ws []WebsiteStatus, err error) {
 // InsertWebsite inserts a website into the database
 func (s *store) InsertWebsite(website WebsiteStatus) (err error) {
 
-	s.DB.Exec("INSERT INTO links (link, status) VALUES ($1, $2)", website.Link, website.Status)
+	_, err = s.DB.Exec("INSERT INTO links (link, status) VALUES ($1, $2)", website.Link, website.Status)
 
 	return
 }

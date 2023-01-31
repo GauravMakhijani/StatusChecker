@@ -3,14 +3,15 @@ package statuschecker
 import (
 	"StatusChecker/db"
 	"context"
-	"fmt"
 	"net/http"
 	"strings"
 	"time"
+
+	"github.com/sirupsen/logrus"
 )
 
 type Service interface {
-	Append(ctx context.Context, website db.WebsiteStatus) (err error)
+	Add(ctx context.Context, website db.WebsiteStatus) (err error)
 	// Check(ctx context.Context, name string) (status bool, err error)
 	GetSimilar(ctx context.Context, name string) (similar []db.WebsiteStatus, err error)
 	CheckStatus(*time.Ticker)
@@ -30,10 +31,13 @@ func (s *statusService) GetSimilar(ctx context.Context, query string) (similar [
 
 	//Make a call to the database to get the status of the website
 	similar, err = s.repo.GetWebsiteStatus(query)
+	if err != nil {
+		return []db.WebsiteStatus{}, err
+	}
 	return
 }
 
-func (s *statusService) Append(ctx context.Context, website db.WebsiteStatus) (err error) {
+func (s *statusService) Add(ctx context.Context, website db.WebsiteStatus) (err error) {
 	err = s.repo.InsertWebsite(website)
 
 	return
@@ -47,10 +51,10 @@ func (s *statusService) CheckStatus(ticker *time.Ticker) {
 		//wait for ticker to send a message
 		case <-ticker.C:
 
-			fmt.Println("Checking status of websites")
+			logrus.Info("Checking status of websites")
 			websites, err := s.repo.GetAll()
 			if err != nil {
-				fmt.Println("Error:", err)
+				logrus.Error("Error:", err)
 				continue
 			}
 
@@ -61,11 +65,11 @@ func (s *statusService) CheckStatus(ticker *time.Ticker) {
 				go func(website db.WebsiteStatus) {
 					status := s.GetStatus(context.Background(), website.Link)
 					if err != nil {
-						fmt.Println("Error:", err)
+						logrus.Error("Error:", err)
 						return
 					}
 					s.repo.UpdateWebsiteStatus(website.Link, status)
-					fmt.Println("Status of", website.Link, "is updated to", status)
+					logrus.Info("Status of ", website.Link, " is updated to ", status)
 				}(website)
 
 			}
@@ -81,7 +85,7 @@ func (s *statusService) GetStatus(ctx context.Context, url string) (status strin
 	}
 
 	//get status
-	fmt.Println("Checking status of", url)
+	logrus.Info("Checking status of", url)
 	resp, err := http.Get(url)
 
 	if err != nil || resp.StatusCode != 200 {
