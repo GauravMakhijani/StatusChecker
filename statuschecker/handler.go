@@ -55,20 +55,20 @@ func handleGetRequest(w http.ResponseWriter, r *http.Request, service Service) {
 
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(websites)
-
-	} else {
-		// Retrieve all websites from the database
-
-		websites, err := service.GetAll(r.Context())
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-
-		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(websites)
+		return
 
 	}
+
+	// Retrieve all websites from the database
+
+	websites, err := service.GetAll(r.Context())
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(websites)
 
 	fmt.Println("Get request successful")
 }

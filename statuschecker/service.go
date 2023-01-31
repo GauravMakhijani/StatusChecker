@@ -34,36 +34,8 @@ func (s *statusService) GetSimilar(ctx context.Context, query string) (similar [
 }
 
 func (s *statusService) Append(ctx context.Context, website db.WebsiteStatus) (err error) {
-	s.repo.InsertWebsite(website)
-	//Make a call to the database to get the status of the website
-	// s.repo.GetWebsiteStatus(url)
-	// //return the status of the website
+	err = s.repo.InsertWebsite(website)
 
-	// for {
-	// 	select {
-	// 	//wait for ticker to send a message
-	// 	case <-ticker.C:
-
-	// 		websites := []db.Website{}
-	// 		err := db.DB.Select(&websites, "SELECT link,status FROM links")
-	// 		if err != nil {
-	// 			fmt.Println("Error:", err)
-	// 			continue
-	// 		}
-
-	// 		//update status of each website
-	// 		for _, website := range websites {
-
-	// 			//send website to updateStatus function in a goroutine
-	// 			go func(website db.Website) {
-	// 				website.UpdateStatus(website.Link)
-	// 			}(website)
-
-	// 		}
-
-	// 	}
-
-	// }
 	return
 }
 
