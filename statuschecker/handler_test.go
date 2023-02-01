@@ -89,8 +89,8 @@ func (s *HandlerTestSuite) TestcreateWebsiteHandler() {
 		}
 
 		for _, website := range websites {
-			s.service.On("GetStatus", mock.Anything, website.Link).Return(website.Status)
-			s.service.On("Add", mock.Anything, website).Return(errors.New("error while inserting in db"))
+			s.service.On("GetStatus", mock.Anything, website.Link).Return(website.Status).Once()
+			s.service.On("Add", mock.Anything, website).Return(errors.New("error while inserting in db")).Once()
 		}
 
 		CreateWebsiteHandler(w, r, s.service)
@@ -189,6 +189,80 @@ func (s *HandlerTestSuite) TestGetWebsiteHandler() {
 
 		assert.Equal(t, http.StatusInternalServerError, w.Result().StatusCode)
 
+	})
+
+}
+
+func (s *HandlerTestSuite) TestHandleWebsites() {
+	t := s.T()
+
+	t.Run("when a invalid request is sent", func(t *testing.T) {
+		r := httptest.NewRequest(http.MethodDelete, "/website", nil)
+		w := httptest.NewRecorder()
+
+		router := http.NewServeMux()
+
+		router.HandleFunc("/websites", HandleWebsites(s.service))
+
+		router.ServeHTTP(w, r)
+
+		assert.Equal(t, http.StatusNotFound, w.Code)
+	})
+
+	t.Run("when a valid get request is sent", func(t *testing.T) {
+		r := httptest.NewRequest(http.MethodGet, "/websites", nil)
+		w := httptest.NewRecorder()
+
+		router := http.NewServeMux()
+		websites := []db.WebsiteStatus{
+			{
+				Link:   "www.youtube.com",
+				Status: "UP",
+			},
+			{
+				Link:   "www.codingninjas.com",
+				Status: "UP",
+			},
+		}
+
+		s.service.On("GetAll", mock.Anything).Return(websites, nil).Once()
+
+		router.HandleFunc("/websites", HandleWebsites(s.service))
+
+		router.ServeHTTP(w, r)
+
+		assert.Equal(t, http.StatusOK, w.Result().StatusCode)
+		var resp []db.WebsiteStatus
+		json.NewDecoder(w.Body).Decode(&resp)
+		assert.Equal(t, websites, resp)
+
+	})
+
+	t.Run("when a successful post request is made", func(t *testing.T) {
+		body := []byte(`{"websites":["www.test1.com"]}`)
+
+		r := httptest.NewRequest(http.MethodPost, "/websites", bytes.NewBuffer(body))
+		w := httptest.NewRecorder()
+
+		router := http.NewServeMux()
+
+		router.HandleFunc("/websites", HandleWebsites(s.service))
+
+		websites := []db.WebsiteStatus{
+			{
+				Link:   "www.test1.com",
+				Status: "DOWN",
+			},
+		}
+
+		for _, website := range websites {
+			s.service.On("GetStatus", mock.Anything, website.Link).Return(website.Status).Once()
+			s.service.On("Add", mock.Anything, website).Return(nil).Once()
+		}
+
+		assert.Equal(t, http.StatusOK, w.Result().StatusCode)
+
+		router.ServeHTTP(w, r)
 	})
 
 }
