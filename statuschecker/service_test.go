@@ -3,6 +3,7 @@ package statuschecker
 import (
 	"context"
 	"errors"
+	"net/http"
 	"testing"
 
 	"StatusChecker/db"
@@ -95,3 +96,46 @@ func (suite *ServiceTestSuite) TestStatusCheckerGetSimilar() {
 	})
 
 }
+
+func (suite *ServiceTestSuite) TestStatusCheckerGetStatus() {
+	t := suite.T()
+
+	//postive testcase
+	t.Run("when GetStatus is successful", func(t *testing.T) {
+		inputUrl := "www.google.com"
+		expected := "UP"
+
+		resp, err := http.Get("http://" + inputUrl) // doubt
+
+		testres := suite.service.GetStatus(context.Background(), inputUrl)
+
+		require.NoError(t, err)
+
+		assert.Equal(t, testres, expected)
+		assert.Equal(t, resp.StatusCode, http.StatusOK)
+	})
+
+	//negative testcase
+
+	t.Run("when GetStatus is Unsuccessful", func(t *testing.T) {
+
+		inputUrl := "www.fakewebite1.com"
+		expected := "DOWN"
+
+		resp, err := http.Get("http://" + inputUrl) // doubt
+
+		testres := suite.service.GetStatus(context.Background(), inputUrl)
+
+		require.Error(t, err)
+		assert.Equal(t, testres, expected)
+		assert.Nil(t, resp)
+	})
+}
+
+// func (suite *ServiceTestSuite) TestStatusCheckerCheckStatus(){
+// 	t := suite.T()
+// 	ticker := time.NewTicker(time.Second)
+// 	go suite.service.CheckStatus(ticker)
+
+// 	suite.repo.UpdateWebsiteStatus()
+// }
