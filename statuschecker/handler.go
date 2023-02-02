@@ -9,7 +9,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-func createWebsiteHandler(w http.ResponseWriter, r *http.Request, service Service) {
+func CreateWebsiteHandler(w http.ResponseWriter, r *http.Request, service Service) {
 	input := make(map[string][]string) //map to store json data
 
 	//decode json data
@@ -25,9 +25,11 @@ func createWebsiteHandler(w http.ResponseWriter, r *http.Request, service Servic
 
 		//insert website and status into database
 		err := service.Add(r.Context(), db.WebsiteStatus{Link: url, Status: status})
+		logrus.Info("when error occured : ", err)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
-			continue
+
+			return
 		}
 	}
 
@@ -38,7 +40,7 @@ func createWebsiteHandler(w http.ResponseWriter, r *http.Request, service Servic
 	logrus.Info("Post request successful")
 }
 
-func getWebsiteHandler(w http.ResponseWriter, r *http.Request, service Service) {
+func GetWebsiteHandler(w http.ResponseWriter, r *http.Request, service Service) {
 
 	//get query from url
 	websiteName := r.URL.Query().Get("name")
@@ -80,11 +82,11 @@ func HandleWebsites(service Service) func(w http.ResponseWriter, r *http.Request
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == http.MethodPost { //only accept post requests
 
-			createWebsiteHandler(w, r, service)
+			CreateWebsiteHandler(w, r, service)
 
 		} else if r.Method == http.MethodGet { //only accept get requests
 
-			getWebsiteHandler(w, r, service)
+			GetWebsiteHandler(w, r, service)
 
 		} else {
 			http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)

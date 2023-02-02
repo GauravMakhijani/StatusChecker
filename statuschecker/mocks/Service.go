@@ -17,7 +17,7 @@ type Service struct {
 }
 
 // Append provides a mock function with given fields: ctx, website
-func (_m *Service) Append(ctx context.Context, website db.WebsiteStatus) error {
+func (_m *Service) Add(ctx context.Context, website db.WebsiteStatus) error {
 	ret := _m.Called(ctx, website)
 
 	var r0 error

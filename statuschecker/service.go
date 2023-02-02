@@ -96,5 +96,8 @@ func (s *statusService) GetStatus(ctx context.Context, url string) (status strin
 
 func (s *statusService) GetAll(ctx context.Context) (ws []db.WebsiteStatus, err error) {
 	ws, err = s.repo.GetAll()
+	if err != nil {
+		ws = []db.WebsiteStatus{}
+	}
 	return
 }
