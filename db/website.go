@@ -2,7 +2,6 @@ package db
 
 import (
 	"github.com/jmoiron/sqlx"
-	logger "github.com/sirupsen/logrus"
 )
 
 type WebsiteStatus struct {
@@ -43,9 +42,6 @@ func (s *store) GetWebsiteStatus(query string) (ws []WebsiteStatus, err error) {
 	ws = []WebsiteStatus{}
 	err = s.DB.Select(&ws, "SELECT id,link,status FROM links WHERE link LIKE $1", "%"+query+"%")
 
-	if err != nil {
-		logger.Error("error occurred in GetWebsiteStatus, ", err)
-	}
 	return
 }
 

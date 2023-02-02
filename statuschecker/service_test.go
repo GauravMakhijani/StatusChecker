@@ -131,11 +131,3 @@ func (suite *ServiceTestSuite) TestStatusCheckerGetStatus() {
 		assert.Nil(t, resp)
 	})
 }
-
-// func (suite *ServiceTestSuite) TestStatusCheckerCheckStatus(){
-// 	t := suite.T()
-// 	ticker := time.NewTicker(time.Second)
-// 	go suite.service.CheckStatus(ticker)
-
-// 	suite.repo.UpdateWebsiteStatus()
-// }
